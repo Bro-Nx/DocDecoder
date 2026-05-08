@@ -10,6 +10,21 @@ export default function DocDecoder() {
   const pdfRef = useRef(null);
   const fileRef = useRef(null);
 
+  const handleCheckout = () => {
+    if (!docText.trim() || docText.trim().length < 50) {
+      setError("Document must be at least 50 characters");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      window.location.href = "https://buy.stripe.com/7sY9ATdVhcbCdu7aHd8Zq00";
+    } catch (e) {
+      setError("Error: " + e.message);
+      setLoading(false);
+    }
+  };
+
   const PRODUCTS = [
     {
       id: "health",
@@ -105,37 +120,6 @@ export default function DocDecoder() {
     }
   ];
 
-  const handleAnalyze = async (text) => {
-    if (!text || text.trim().length < 50) {
-      setError("Document must be at least 50 characters");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ document: text })
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Analysis failed");
-      }
-
-      const data = await res.json();
-      setResult(data);
-      setStage("result");
-    } catch (e) {
-      setError(e.message || "Analysis failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleFileUpload = (e) => {
     const file = e.target?.files?.[0];
     if (file) {
@@ -167,9 +151,10 @@ export default function DocDecoder() {
         <style>{`
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body { background: linear-gradient(135deg, #faf8f3 0%, #f4ede3 100%); }
-          button { font-family: 'Inter', sans-serif; border: 2px solid #2c2416; background: #fff8f0; color: #2c2416; cursor: pointer; padding: 10px 20px; transition: all 0.3s; border-radius: 8px; font-weight: 600; }
+          button { font-family: Inter, sans-serif; border: 2px solid #2c2416; background: #fff8f0; color: #2c2416; cursor: pointer; padding: 10px 20px; transition: all 0.3s; border-radius: 8px; font-weight: 600; }
           button:hover { background: #2c2416; color: #faf8f3; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-          input, textarea { font-family: 'Inter', sans-serif; border: 2px solid #d4ccc0; padding: 12px; background: #fff8f0; color: #2c2416; border-radius: 8px; }
+          button:disabled { opacity: 0.5; cursor: not-allowed; }
+          input, textarea { font-family: Inter, sans-serif; border: 2px solid #d4ccc0; padding: 12px; background: #fff8f0; color: #2c2416; border-radius: 8px; }
           input::placeholder, textarea::placeholder { color: #9b8b7e; }
           .card { padding: 24px; background: #fff8f0; border: 3px solid #e8dfd2; cursor: pointer; transition: all 0.3s; border-radius: 12px; }
           .card:hover { border-color: #d4a574; box-shadow: 0 12px 24px rgba(0,0,0,0.08); transform: translateY(-4px); }
@@ -186,7 +171,7 @@ export default function DocDecoder() {
                 Understand any document before it costs you money
               </p>
               <p style={{ fontSize: 14, color: "#6b5d50", maxWidth: 700, margin: "0 auto", lineHeight: 1.8 }}>
-                Plain English. Clause-by-clause risk scores. And 8–10 expert questions built on negotiation frameworks. Creative analysis with real insight.
+                Plain English. Clause-by-clause risk scores. And 8–10 expert questions built on expert negotiation and sales frameworks. Creative analysis with real insight.
               </p>
             </div>
 
@@ -224,7 +209,7 @@ export default function DocDecoder() {
                 Analyze Your Document
               </h2>
               <p style={{ fontSize: 13, color: "#6b5d50", marginBottom: 20 }}>
-                Paste or upload any document to get instant, insightful analysis.
+                Only $9.99. Stripe will handle payment and email.
               </p>
               
               <textarea
@@ -236,11 +221,11 @@ export default function DocDecoder() {
               
               <div style={{ display: "flex", gap: 12 }}>
                 <button
-                  onClick={() => handleAnalyze(docText)}
+                  onClick={handleCheckout}
                   disabled={loading}
-                  style={{ flex: 1, padding: 14, fontSize: 14, fontWeight: 700 }}
+                  style={{ flex: 1, padding: 14, fontSize: 14, fontWeight: 700, background: "#d4a574", color: "#fff" }}
                 >
-                  {loading ? "✨ Analyzing..." : "→ Analyze Document"}
+                  {loading ? "✨ Processing..." : "→ Analyze for $9.99"}
                 </button>
                 <button
                   onClick={() => fileRef.current?.click()}
