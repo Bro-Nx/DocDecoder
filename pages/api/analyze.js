@@ -9,33 +9,44 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "No document provided" });
   }
 
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  
+  if (!apiKey) {
+    return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured" });
+  }
+
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 3000,
-        system: `You are DocDecoder™. Analyze documents in plain English. Return ONLY valid JSON with: documentType, summary (2-3 sentences), overallRisk (RED/AMBER/GREEN), clauses (array of {title, plain, risk}), actions (array of {priority, action, reason}), questions (array of {question starting with "Ask them:"}).`,
-        messages: [{ role: "user", content: `Analyze: ${document}` }],
+        max_tokens: 2000,
+        system: `You are DocDecoder™. Return ONLY valid JSON: {documentType: string, summary: string, overallRisk: "RED"|"AMBER"|"GREEN", clauses: [{title, plain, risk}], actions: [{priority, action, reason}], questions: [{question}]}`,
+        messages: [{ role: "user", content: `Analyze this document:\n\n${document}` }],
       }),
     });
 
+    const responseText = await response.text();
+    
     if (!response.ok) {
-      throw new Error(`Claude API error: ${response.statusText}`);
+      console.error("Claude API error:", response.status, responseText);
+      return res.status(response.status).json({ error: `Claude API error: ${response.status}` });
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseText);
     const analysisText = data.content?.[0]?.text || "";
+    
+    // Try to parse the JSON response
     const analysis = JSON.parse(analysisText);
 
     return res.status(200).json(analysis);
   } catch (err) {
-    console.error("Analysis error:", err);
-    return res.status(500).json({ error: err.message });
+    console.error("Analysis error:", err.message);
+    return res.status(500).json({ error: `Analysis error: ${err.message}` });
   }
 }
