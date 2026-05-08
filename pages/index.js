@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 
 export default function DocDecoder() {
@@ -10,6 +10,16 @@ export default function DocDecoder() {
   const pdfRef = useRef(null);
   const fileRef = useRef(null);
 
+  // Check for pending document after payment redirect
+  useEffect(() => {
+    const pendingDoc = sessionStorage.getItem("pendingDocument");
+    if (pendingDoc) {
+      setDocText(pendingDoc);
+      sessionStorage.removeItem("pendingDocument");
+      analyzeDocument(pendingDoc);
+    }
+  }, []);
+
   const handleCheckout = () => {
     if (!docText.trim() || docText.trim().length < 50) {
       setError("Document must be at least 50 characters");
@@ -18,9 +28,36 @@ export default function DocDecoder() {
 
     try {
       setLoading(true);
+      sessionStorage.setItem("pendingDocument", docText);
       window.location.href = "https://buy.stripe.com/7sY9ATdVhcbCdu7aHd8Zq00";
     } catch (e) {
       setError("Error: " + e.message);
+      setLoading(false);
+    }
+  };
+
+  const analyzeDocument = async (text) => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ document: text })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Analysis failed");
+      }
+
+      const data = await res.json();
+      setResult(data);
+      setStage("result");
+    } catch (e) {
+      setError(e.message || "Analysis failed");
+    } finally {
       setLoading(false);
     }
   };
@@ -209,7 +246,7 @@ export default function DocDecoder() {
                 Analyze Your Document
               </h2>
               <p style={{ fontSize: 13, color: "#6b5d50", marginBottom: 20 }}>
-                Only $9.99. Stripe will handle payment and email.
+                Only $9.99.
               </p>
               
               <textarea
