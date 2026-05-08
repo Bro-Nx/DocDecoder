@@ -1,13 +1,6 @@
 import { useState, useRef } from "react";
 import Head from "next/head";
 
-const T = {
-  bg: "#0a0e27", paper: "#0f1433", ink: "#00ff41",
-  dim: "#00cc33", border: "#00ff41", gold: "#00ff41",
-  red: "#ff0055", redBg: "#ff005522", amber: "#ffaa00", ambBg: "#ffaa0022",
-  green: "#00ff41", grnBg: "#00ff4122", blue: "#00ccff",
-};
-
 export default function DocDecoder() {
   const [stage, setStage] = useState("home");
   const [docText, setDocText] = useState("");
@@ -22,7 +15,6 @@ export default function DocDecoder() {
       id: "health",
       icon: "🏥",
       name: "Health DocDecoder",
-      color: "#00ff41",
       tagline: "Medical bills, EOBs & denial letters",
       documentType: "UnitedHealth Group EOB - Denied Claim",
       summary: "This EOB denies a $2,472 CT scan. You have 30 days for peer-to-peer review.",
@@ -46,7 +38,6 @@ export default function DocDecoder() {
       id: "policy",
       icon: "📋",
       name: "Policy DocDecoder",
-      color: "#00ff41",
       tagline: "Insurance policies, riders & exclusions",
       documentType: "Homeowners Insurance Policy (HO-3)",
       summary: "Your policy covers wind and fire but EXCLUDES all flood damage.",
@@ -70,7 +61,6 @@ export default function DocDecoder() {
       id: "legal",
       icon: "⚖️",
       name: "Legal DocDecoder",
-      color: "#00ff41",
       tagline: "Agreements, job offers & legal paperwork",
       documentType: "Employment Offer Letter",
       summary: "Offer contains IP assignment, 18-month non-compete, non-solicitation, and mandatory arbitration.",
@@ -84,7 +74,7 @@ export default function DocDecoder() {
         "What happens to my equity if I leave before the 1-year cliff?",
         "Is the non-solicitation clause limited to direct reports or all employees?",
         "Can I work for non-competing divisions of competitor companies?",
-        "Can I work for non-competing divisions of competitor companies?",
+        "What IP specifically belongs to the company vs. what I create independently?",
         "Who decides disputes about IP ownership?",
         "Is there a geographic limitation to the non-compete?",
         "What's the penalty if I violate the non-compete agreement?"
@@ -94,7 +84,6 @@ export default function DocDecoder() {
       id: "aid",
       icon: "🎓",
       name: "Financial Aid DocDecoder",
-      color: "#00ff41",
       tagline: "FAFSA awards, student loan notes & IBR",
       documentType: "University Financial Aid Award Letter",
       summary: "Total aid: $23,100/year. Remaining cost: $16,900/year. Parent PLUS loan at 9.08% interest.",
@@ -170,83 +159,101 @@ export default function DocDecoder() {
   return (
     <>
       <Head>
-        <title>DocDecoder - Enterprise Document Analysis</title>
-        <meta name="description" content="Plain English document analysis with expert questions." />
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+        <title>DocDecoder - Artistic Document Analysis</title>
+        <meta name="description" content="Creative document analysis with soul." />
+        <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz@9..144&family=Inter:wght@300;400;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet" />
       </Head>
-      <div style={{ minHeight: "100vh", background: T.bg, fontFamily: "IBM Plex Mono, monospace", color: T.ink }}>
+      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #faf8f3 0%, #f4ede3 100%)", fontFamily: "Inter, sans-serif", color: "#2c2416" }}>
         <style>{`
           * { box-sizing: border-box; margin: 0; padding: 0; }
-          body { font-family: 'IBM Plex Mono', monospace; }
-          button { font-family: 'IBM Plek Mono', monospace; border: 2px solid ${T.ink}; background: transparent; color: ${T.ink}; cursor: pointer; padding: 8px 16px; transition: all 0.2s; }
-          button:hover { background: ${T.ink}22; }
-          input, textarea { font-family: 'IBM Plex Mono', monospace; border: 2px solid ${T.ink}; padding: 12px; background: ${T.paper}; color: ${T.ink}; }
+          body { background: linear-gradient(135deg, #faf8f3 0%, #f4ede3 100%); }
+          button { font-family: 'Inter', sans-serif; border: 2px solid #2c2416; background: #fff8f0; color: #2c2416; cursor: pointer; padding: 10px 20px; transition: all 0.3s; border-radius: 8px; font-weight: 600; }
+          button:hover { background: #2c2416; color: #faf8f3; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+          input, textarea { font-family: 'Inter', sans-serif; border: 2px solid #d4ccc0; padding: 12px; background: #fff8f0; color: #2c2416; border-radius: 8px; }
+          input::placeholder, textarea::placeholder { color: #9b8b7e; }
+          .card { padding: 24px; background: #fff8f0; border: 3px solid #e8dfd2; cursor: pointer; transition: all 0.3s; border-radius: 12px; }
+          .card:hover { border-color: #d4a574; box-shadow: 0 12px 24px rgba(0,0,0,0.08); transform: translateY(-4px); }
           @media print { .no-print { display: none; } }
         `}</style>
 
         {stage === "home" && (
-          <div style={{ maxWidth: 1400, margin: "0 auto", padding: "40px 20px" }}>
-            <div style={{ borderBottom: "2px solid " + T.ink, paddingBottom: 20, marginBottom: 40 }}>
-              <h1 style={{ fontSize: 48, fontWeight: 700, marginBottom: 10 }}>DocDecoder</h1>
-              <p style={{ fontSize: 14, color: T.dim, maxWidth: 800, lineHeight: 1.6 }}>
-                Plain English. Clause-by-clause risk scores. And 8–10 expert questions built on negotiation frameworks.
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 30px" }}>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <h1 style={{ fontSize: 56, fontFamily: "Fraunces, serif", fontWeight: 700, marginBottom: 16, color: "#2c2416", letterSpacing: "-1px" }}>
+                DocDecoder
+              </h1>
+              <p style={{ fontSize: 18, fontFamily: "Caveat, cursive", color: "#d4a574", marginBottom: 20, fontWeight: 700 }}>
+                Understand any document before it costs you money
+              </p>
+              <p style={{ fontSize: 14, color: "#6b5d50", maxWidth: 700, margin: "0 auto", lineHeight: 1.8 }}>
+                Plain English. Clause-by-clause risk scores. And 8–10 expert questions built on negotiation frameworks. Creative analysis with real insight.
               </p>
             </div>
 
-            <div style={{ marginBottom: 40 }}>
-              <h3 style={{ marginBottom: 20, fontSize: 16, color: T.blue }}>SAMPLE REPORTS</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 15 }}>
+            <div style={{ marginBottom: 60 }}>
+              <h3 style={{ textAlign: "center", marginBottom: 30, fontSize: 20, fontFamily: "Fraunces, serif", color: "#2c2416" }}>
+                Try a sample
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
                 {PRODUCTS.map(p => (
                   <div
                     key={p.id}
-                    style={{
-                      padding: 20,
-                      background: T.paper,
-                      border: "2px solid " + T.ink,
-                      cursor: "pointer",
-                      transition: "all 0.3s"
-                    }}
+                    className="card"
                     onClick={() => {
                       setResult(p);
                       setStage("result");
                     }}
                   >
-                    <div style={{ fontSize: 24, marginBottom: 10 }}>{p.icon}</div>
-                    <h3 style={{ color: T.ink, marginBottom: 4, fontSize: 14 }}>{p.name}</h3>
-                    <p style={{ fontSize: 12, color: T.dim, marginBottom: 12 }}>{p.tagline}</p>
-                    <button style={{ width: "100%", fontSize: 11 }}>VIEW SAMPLE</button>
+                    <div style={{ fontSize: 40, marginBottom: 12 }}>{p.icon}</div>
+                    <h3 style={{ color: "#2c2416", marginBottom: 8, fontSize: 16, fontFamily: "Fraunces, serif", fontWeight: 600 }}>
+                      {p.name}
+                    </h3>
+                    <p style={{ fontSize: 13, color: "#6b5d50", marginBottom: 16, lineHeight: 1.6 }}>
+                      {p.tagline}
+                    </p>
+                    <button style={{ width: "100%", fontSize: 12 }}>
+                      → View Sample
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{ background: T.paper, padding: 30, border: "2px solid " + T.ink }}>
-              <h2 style={{ marginBottom: 20, fontSize: 16, color: T.blue }}>ANALYZE DOCUMENT</h2>
+            <div style={{ background: "#fff8f0", padding: 40, border: "3px solid #e8dfd2", borderRadius: 12 }}>
+              <h2 style={{ marginBottom: 16, fontSize: 24, fontFamily: "Fraunces, serif", color: "#2c2416" }}>
+                Analyze Your Document
+              </h2>
+              <p style={{ fontSize: 13, color: "#6b5d50", marginBottom: 20 }}>
+                Paste or upload any document to get instant, insightful analysis.
+              </p>
+              
               <textarea
                 value={docText}
                 onChange={(e) => setDocText(e.target.value)}
-                placeholder="Paste document here (50+ characters)..."
-                style={{ width: "100%", height: 200, marginBottom: 15 }}
+                placeholder="Paste your document here (50+ characters)..."
+                style={{ width: "100%", height: 220, marginBottom: 20, fontSize: 14 }}
               />
-              <div style={{ display: "flex", gap: 10 }}>
+              
+              <div style={{ display: "flex", gap: 12 }}>
                 <button
                   onClick={() => handleAnalyze(docText)}
                   disabled={loading}
-                  style={{ flex: 1, padding: 12, fontSize: 12, fontWeight: 700 }}
+                  style={{ flex: 1, padding: 14, fontSize: 14, fontWeight: 700 }}
                 >
-                  {loading ? "ANALYZING..." : "ANALYZE DOCUMENT"}
+                  {loading ? "✨ Analyzing..." : "→ Analyze Document"}
                 </button>
                 <button
                   onClick={() => fileRef.current?.click()}
-                  style={{ padding: 12, fontSize: 12 }}
+                  style={{ padding: 14, fontSize: 14 }}
                 >
-                  UPLOAD FILE
+                  📎 Upload
                 </button>
                 <input ref={fileRef} type="file" hidden onChange={handleFileUpload} />
               </div>
+              
               {error && (
-                <div style={{ color: T.red, padding: 12, marginTop: 15, background: T.redBg, border: "1px solid " + T.red }}>
-                  {error}
+                <div style={{ color: "#c94a38", padding: 14, marginTop: 16, background: "#fce8e4", border: "2px solid #c94a38", borderRadius: 8 }}>
+                  ⚠️ {error}
                 </div>
               )}
             </div>
@@ -254,34 +261,54 @@ export default function DocDecoder() {
         )}
 
         {stage === "result" && result && (
-          <div style={{ maxWidth: 1400, margin: "0 auto", padding: "40px 20px" }}>
-            <div ref={pdfRef} style={{ background: T.paper, padding: 40, marginBottom: 40, border: "2px solid " + T.ink }}>
-              <h1 style={{ fontSize: 32, color: T.ink, marginBottom: 20 }}>DocDecoder Report</h1>
-              <h2 style={{ fontSize: 18, marginBottom: 10 }}>{result.documentType}</h2>
-              <p style={{ fontSize: 13, color: T.dim, lineHeight: 1.6, marginBottom: 15 }}>{result.summary}</p>
+          <div style={{ maxWidth: 1000, margin: "0 auto", padding: "60px 30px" }}>
+            <div ref={pdfRef} style={{ background: "#fff8f0", padding: 50, border: "3px solid #e8dfd2", borderRadius: 12, marginBottom: 40 }}>
+              <div style={{ textAlign: "center", marginBottom: 40, paddingBottom: 30, borderBottom: "2px solid #e8ddf2" }}>
+                <h1 style={{ fontSize: 44, fontFamily: "Fraunces, serif", fontWeight: 700, color: "#2c2416", marginBottom: 8 }}>
+                  DocDecoder Report
+                </h1>
+                <p style={{ fontSize: 13, color: "#6b5d50" }}>Creative analysis. Real insight.</p>
+              </div>
+
+              <h2 style={{ fontSize: 22, fontFamily: "Fraunces, serif", color: "#2c2416", marginBottom: 12 }}>
+                {result.documentType}
+              </h2>
+              <p style={{ fontSize: 14, color: "#6b5d50", lineHeight: 1.8, marginBottom: 20 }}>
+                {result.summary}
+              </p>
 
               {result.clauses && (
-                <div style={{ marginBottom: 30 }}>
-                  <h3 style={{ fontSize: 14, marginBottom: 15, color: T.blue }}>KEY CLAUSES</h3>
+                <div style={{ marginBottom: 35 }}>
+                  <h3 style={{ fontSize: 16, fontFamily: "Fraunces, serif", color: "#2c2416", marginBottom: 16 }}>
+                    Key Clauses
+                  </h3>
                   {result.clauses.map((c, i) => (
-                    <div key={i} style={{ padding: 15, marginBottom: 10, background: T.bg, border: "1px solid " + T.ink }}>
+                    <div key={i} style={{ padding: 16, marginBottom: 12, background: "#faf8f3", border: "2px solid #e8dfd2", borderRadius: 8 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                        <strong style={{ fontSize: 12 }}>{c.title}</strong>
-                        <span style={{ fontSize: 10, color: c.risk === "RED" ? T.red : T.amber }}>[{c.risk}]</span>
+                        <strong style={{ fontSize: 13, color: "#2c2416" }}>{c.title}</strong>
+                        <span style={{ fontSize: 11, color: c.risk === "RED" ? "#c94a38" : c.risk === "AMBER" ? "#d4a574" : "#5a7d4d", fontWeight: 700 }}>
+                          {c.risk}
+                        </span>
                       </div>
-                      <p style={{ fontSize: 12, color: T.dim }}>{c.plain}</p>
+                      <p style={{ fontSize: 13, color: "#6b5d50" }}>{c.plain}</p>
                     </div>
                   ))}
                 </div>
               )}
 
               {result.actions && (
-                <div style={{ marginBottom: 30 }}>
-                  <h3 style={{ fontSize: 14, marginBottom: 15, color: T.blue }}>ACTIONS</h3>
+                <div style={{ marginBottom: 35 }}>
+                  <h3 style={{ fontSize: 16, fontFamily: "Fraunces, serif", color: "#2c2416", marginBottom: 16 }}>
+                    Recommended Actions
+                  </h3>
                   {result.actions.map((a, i) => (
-                    <div key={i} style={{ padding: 12, marginBottom: 10, background: a.priority === "URGENT" ? T.redBg : T.ambBg }}>
-                      <strong style={{ fontSize: 11 }}>[{a.priority}] {a.action}</strong>
-                      <p style={{ fontSize: 11, color: T.dim, marginTop: 4 }}>{a.reason}</p>
+                    <div key={i} style={{ padding: 16, marginBottom: 12, background: a.priority === "URGENT" ? "#fce8e4" : "#fff3e4", border: `2px solid ${a.priority === "URGENT" ? "#c94a38" : "#d4a574"}`, borderRadius: 8 }}>
+                      <strong style={{ fontSize: 13, color: "#2c2416" }}>
+                        [{a.priority}] {a.action}
+                      </strong>
+                      <p style={{ fontSize: 12, color: "#6b5d50", marginTop: 6 }}>
+                        {a.reason}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -289,19 +316,29 @@ export default function DocDecoder() {
 
               {result.questions && (
                 <div style={{ marginBottom: 30 }}>
-                  <h3 style={{ fontSize: 14, marginBottom: 15, color: T.blue }}>EXPERT QUESTIONS</h3>
+                  <h3 style={{ fontSize: 16, fontFamily: "Fraunces, serif", color: "#2c2416", marginBottom: 16 }}>
+                    Expert Questions
+                  </h3>
                   {result.questions.map((q, i) => (
-                    <div key={i} style={{ padding: 12, marginBottom: 8, background: T.bg, borderLeft: "3px solid " + T.ink }}>
-                      <p style={{ fontSize: 11, color: T.ink }}>Q{i + 1}. {q}</p>
+                    <div key={i} style={{ padding: 14, marginBottom: 10, background: "#faf8f3", borderLeft: "4px solid #d4a574", borderRadius: 4 }}>
+                      <p style={{ fontSize: 12, color: "#2c2416", lineHeight: 1.6 }}>
+                        <strong>Q{i + 1}.</strong> {q}
+                      </p>
                     </div>
                   ))}
                 </div>
               )}
+
+              <div style={{ paddingTop: 20, borderTop: "2px solid #e8dfd2", fontSize: 11, color: "#9b8b7e", lineHeight: 1.6 }}>
+                <p>
+                  This report explains your document in plain English. Not legal advice. For important decisions, consult a qualified attorney.
+                </p>
+              </div>
             </div>
 
-            <div className="no-print" style={{ display: "flex", gap: 10, marginBottom: 30 }}>
-              <button onClick={downloadPDF} style={{ flex: 1, padding: 12, fontSize: 12, fontWeight: 700 }}>
-                DOWNLOAD PDF
+            <div className="no-print" style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+              <button onClick={downloadPDF} style={{ flex: 1, padding: 16, fontSize: 14, fontWeight: 700 }}>
+                → Download PDF
               </button>
             </div>
 
@@ -312,15 +349,18 @@ export default function DocDecoder() {
                 setDocText("");
                 setResult(null);
               }}
-              style={{ width: "100%", padding: 12, fontSize: 12 }}
+              style={{ width: "100%", padding: 14, fontSize: 14 }}
             >
-              ANALYZE ANOTHER DOCUMENT
+              ← Analyze Another Document
             </button>
           </div>
         )}
 
-        <footer style={{ marginTop: 80, padding: "20px", borderTop: "2px solid " + T.ink, textAlign: "center", fontSize: 10, color: T.dim }}>
-          DOCDECODER - ENTERPRISE DOCUMENT ANALYSIS
+        <footer style={{ marginTop: 80, padding: "40px 30px", textAlign: "center", fontSize: 12, color: "#9b8b7e", borderTop: "2px solid #e8dfd2" }}>
+          <p style={{ fontFamily: "Caveat, cursive", fontSize: 16, color: "#d4a574", marginBottom: 8 }}>
+            DocDecoder
+          </p>
+          Creative analysis. Real insight. Not legal advice.
         </footer>
       </div>
     </>
