@@ -26,8 +26,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
-        system: `You are DocDecoder™. Analyze documents and return ONLY valid JSON (no markdown, no code blocks). Format: {"documentType":"string","summary":"string","overallRisk":"RED|AMBER|GREEN","clauses":[{"title":"string","plain":"string","risk":"RED|AMBER|GREEN"}],"actions":[{"priority":"URGENT|IMPORTANT|OPTIONAL","action":"string","reason":"string"}],"questions":[{"question":"Ask them: ..."}]}`,
-        messages: [{ role: "user", content: `Analyze this document:\n\n${document}` }],
+        system: `You are DocDecoder. Return ONLY valid JSON: {"documentType":"string","summary":"string","overallRisk":"RED|AMBER|GREEN","clauses":[{"title":"string","plain":"string","risk":"RED|AMBER|GREEN"}],"actions":[{"priority":"URGENT|IMPORTANT","action":"string","reason":"string"}],"questions":["question 1","question 2","question 3","question 4","question 5","question 6","question 7","question 8","question 9","question 10"]}`,
+        messages: [{ role: "user", content: `Analyze: ${document}` }],
       }),
     });
 
@@ -35,22 +35,27 @@ export default async function handler(req, res) {
     
     if (!response.ok) {
       console.error("Claude API error:", response.status, responseText);
-      return res.status(response.status).json({ error: `Claude API error: ${response.status}` });
+      return res.status(response.status).json({ error: "Claude API error" });
     }
 
     const data = JSON.parse(responseText);
     let analysisText = data.content?.[0]?.text || "";
     
-    // Remove markdown code blocks if present
+    // Remove markdown code blocks
     analysisText = analysisText.replace(/^```json\n?/, "").replace(/\n?```$/, "");
     analysisText = analysisText.replace(/^```\n?/, "").replace(/\n?```$/, "");
     
     // Parse JSON
     const analysis = JSON.parse(analysisText);
 
+    // Ensure questions is an array
+    if (!Array.isArray(analysis.questions)) {
+      analysis.questions = [];
+    }
+
     return res.status(200).json(analysis);
   } catch (err) {
     console.error("Analysis error:", err.message);
-    return res.status(500).json({ error: `Analysis error: ${err.message}` });
+    return res.status(500).json({ error: err.message });
   }
 }
