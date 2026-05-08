@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
-        system: `You are DocDecoder™. Return ONLY valid JSON: {documentType: string, summary: string, overallRisk: "RED"|"AMBER"|"GREEN", clauses: [{title, plain, risk}], actions: [{priority, action, reason}], questions: [{question}]}`,
+        system: `You are DocDecoder™. Analyze documents and return ONLY valid JSON (no markdown, no code blocks). Format: {"documentType":"string","summary":"string","overallRisk":"RED|AMBER|GREEN","clauses":[{"title":"string","plain":"string","risk":"RED|AMBER|GREEN"}],"actions":[{"priority":"URGENT|IMPORTANT|OPTIONAL","action":"string","reason":"string"}],"questions":[{"question":"Ask them: ..."}]}`,
         messages: [{ role: "user", content: `Analyze this document:\n\n${document}` }],
       }),
     });
@@ -39,9 +39,13 @@ export default async function handler(req, res) {
     }
 
     const data = JSON.parse(responseText);
-    const analysisText = data.content?.[0]?.text || "";
+    let analysisText = data.content?.[0]?.text || "";
     
-    // Try to parse the JSON response
+    // Remove markdown code blocks if present
+    analysisText = analysisText.replace(/^```json\n?/, "").replace(/\n?```$/, "");
+    analysisText = analysisText.replace(/^```\n?/, "").replace(/\n?```$/, "");
+    
+    // Parse JSON
     const analysis = JSON.parse(analysisText);
 
     return res.status(200).json(analysis);
