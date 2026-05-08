@@ -3,12 +3,16 @@ import Head from "next/head";
 
 export default function DocDecoder() {
   const [stage, setStage] = useState("home");
+  const [email, setEmail] = useState("");
   const [docText, setDocText] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const pdfRef = useRef(null);
   const fileRef = useRef(null);
+
+  // Stripe Payment Link (simple, no API needed)
+  const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/7sY9ATdVhcbCdu7aHd8Zq00";
 
   const PRODUCTS = [
     {
@@ -104,6 +108,32 @@ export default function DocDecoder() {
       ]
     }
   ];
+
+  const handleCheckout = async () => {
+    if (!email.trim()) {
+      setError("Email required to receive your report");
+      return;
+    }
+    if (!docText.trim() || docText.trim().length < 50) {
+      setError("Document must be at least 50 characters");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      // Store email + doc in localStorage for after payment
+      sessionStorage.setItem("docDecoderEmail", email);
+      sessionStorage.setItem("docDecoderDoc", docText);
+
+      // Redirect to Stripe payment link
+      window.location.href = STRIPE_PAYMENT_LINK;
+    } catch (e) {
+      setError(e.message || "Checkout failed");
+      setLoading(false);
+    }
+  };
 
   const handleAnalyze = async (text) => {
     if (!text || text.trim().length < 50) {
@@ -224,8 +254,16 @@ export default function DocDecoder() {
                 Analyze Your Document
               </h2>
               <p style={{ fontSize: 13, color: "#6b5d50", marginBottom: 20 }}>
-                Paste or upload any document to get instant, insightful analysis.
+                Only $9.99. Email required to receive your report.
               </p>
+              
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your email..."
+                style={{ width: "100%", marginBottom: 16 }}
+              />
               
               <textarea
                 value={docText}
@@ -236,11 +274,17 @@ export default function DocDecoder() {
               
               <div style={{ display: "flex", gap: 12 }}>
                 <button
-                  onClick={() => handleAnalyze(docText)}
+                  onClick={handleCheckout}
                   disabled={loading}
+                  style={{ flex: 1, padding: 14, fontSize: 14, fontWeight: 700, background: "#d4a574", color: "#fff" }}
+                >
+                  {loading ? "✨ Processing..." : "→ Analyze for $9.99"}
+                </button>
+                <button
+                  onClick={() => handleAnalyze(docText)}
                   style={{ flex: 1, padding: 14, fontSize: 14, fontWeight: 700 }}
                 >
-                  {loading ? "✨ Analyzing..." : "→ Analyze Document"}
+                  → Free Sample
                 </button>
                 <button
                   onClick={() => fileRef.current?.click()}
