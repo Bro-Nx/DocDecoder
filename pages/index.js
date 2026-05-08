@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 
@@ -7,16 +9,21 @@ export default function DocDecoder() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
   const pdfRef = useRef(null);
   const fileRef = useRef(null);
 
-  // Check for pending document after payment redirect
+  // Check for payment session after Stripe redirect
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const session = params.get("session_id");
     const pendingDoc = sessionStorage.getItem("pendingDocument");
-    if (pendingDoc) {
+
+    if (session && pendingDoc) {
+      setSessionId(session);
       setDocText(pendingDoc);
       sessionStorage.removeItem("pendingDocument");
-      analyzeDocument(pendingDoc);
+      analyzeDocument(pendingDoc, session);
     }
   }, []);
 
@@ -26,8 +33,11 @@ export default function DocDecoder() {
       return;
     }
 
+    if (loading) return; // Prevent duplicate requests
+
     try {
       setLoading(true);
+      setError("");
       sessionStorage.setItem("pendingDocument", docText);
       window.location.href = "https://buy.stripe.com/7sY9ATdVhcbCdu7aHd8Zq00";
     } catch (e) {
@@ -36,7 +46,7 @@ export default function DocDecoder() {
     }
   };
 
-  const analyzeDocument = async (text) => {
+  const analyzeDocument = async (text, session) => {
     try {
       setLoading(true);
       setError("");
@@ -44,7 +54,10 @@ export default function DocDecoder() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ document: text })
+        body: JSON.stringify({ 
+          document: text,
+          sessionId: session // Verify payment on backend
+        })
       });
 
       if (!res.ok) {
@@ -59,6 +72,43 @@ export default function DocDecoder() {
       setError(e.message || "Analysis failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+
+    // File type validation
+    const allowedTypes = ["text/plain", "application/pdf", "application/msword"];
+    if (!allowedTypes.includes(file.type) && !file.name.endsWith(".docx")) {
+      setError("Only .txt, .pdf, .doc, .docx files allowed");
+      return;
+    }
+
+    // File size validation (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File too large (max 5MB)");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result;
+      if (typeof text === "string") {
+        setDocText(text);
+        setError("");
+      }
+    };
+    reader.onerror = () => {
+      setError("Failed to read file");
+    };
+    reader.readAsText(file);
+  };
+
+  const downloadPDF = () => {
+    if (pdfRef.current) {
+      window.print();
     }
   };
 
@@ -157,26 +207,6 @@ export default function DocDecoder() {
     }
   ];
 
-  const handleFileUpload = (e) => {
-    const file = e.target?.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result;
-        if (typeof text === "string") {
-          setDocText(text);
-        }
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const downloadPDF = () => {
-    if (pdfRef.current) {
-      window.print();
-    }
-  };
-
   return (
     <>
       <Head>
@@ -266,11 +296,18 @@ export default function DocDecoder() {
                 </button>
                 <button
                   onClick={() => fileRef.current?.click()}
+                  disabled={loading}
                   style={{ padding: 14, fontSize: 14 }}
                 >
                   📎 Upload
                 </button>
-                <input ref={fileRef} type="file" hidden onChange={handleFileUpload} />
+                <input 
+                  ref={fileRef} 
+                  type="file" 
+                  hidden 
+                  accept=".txt,.pdf,.doc,.docx"
+                  onChange={handleFileUpload} 
+                />
               </div>
               
               {error && (
@@ -285,7 +322,7 @@ export default function DocDecoder() {
         {stage === "result" && result && (
           <div style={{ maxWidth: 1000, margin: "0 auto", padding: "60px 30px" }}>
             <div ref={pdfRef} style={{ background: "#fff8f0", padding: 50, border: "3px solid #e8dfd2", borderRadius: 12, marginBottom: 40 }}>
-              <div style={{ textAlign: "center", marginBottom: 40, paddingBottom: 30, borderBottom: "2px solid #e8ddf2" }}>
+              <div style={{ textAlign: "center", marginBottom: 40, paddingBottom: 30, borderBottom: "2px solid #e8dfd2" }}>
                 <h1 style={{ fontSize: 44, fontFamily: "Fraunces, serif", fontWeight: 700, color: "#2c2416", marginBottom: 8 }}>
                   DocDecoder Report
                 </h1>
