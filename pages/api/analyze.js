@@ -3,16 +3,25 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { document } = req.body;
+  const { document, sessionId } = req.body;
 
   if (!document) {
     return res.status(400).json({ error: "No document provided" });
   }
 
+  // TODO: Verify sessionId with Stripe
+  // For now, we'll accept it - but in production:
+  // 1. Call Stripe API to verify session was paid
+  // 2. Check session status = "complete"
+  // 3. Only then proceed with analysis
+  if (!sessionId) {
+    return res.status(403).json({ error: "Payment verification failed" });
+  }
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   
   if (!apiKey) {
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured" });
+    return res.status(500).json({ error: "API not configured" });
   }
 
   try {
@@ -26,7 +35,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
-        system: `You are DocDecoder. Return ONLY valid JSON: {"documentType":"string","summary":"string","overallRisk":"RED|AMBER|GREEN","clauses":[{"title":"string","plain":"string","risk":"RED|AMBER|GREEN"}],"actions":[{"priority":"URGENT|IMPORTANT","action":"string","reason":"string"}],"questions":["question 1","question 2","question 3","question 4","question 5","question 6","question 7","question 8","question 9","question 10"]}`,
+        system: `You are DocDecoder™. Analyze documents in plain English. Return ONLY valid JSON with: documentType, summary (2-3 sentences), overallRisk (RED/AMBER/GREEN), clauses (array of {title, plain, risk}), actions (array of {priority, action, reason}), questions (array of strings, 8-10 expert questions).`,
         messages: [{ role: "user", content: `Analyze: ${document}` }],
       }),
     });
@@ -41,7 +50,7 @@ export default async function handler(req, res) {
     const data = JSON.parse(responseText);
     let analysisText = data.content?.[0]?.text || "";
     
-    // Remove markdown code blocks
+    // Remove markdown code blocks if present
     analysisText = analysisText.replace(/^```json\n?/, "").replace(/\n?```$/, "");
     analysisText = analysisText.replace(/^```\n?/, "").replace(/\n?```$/, "");
     
